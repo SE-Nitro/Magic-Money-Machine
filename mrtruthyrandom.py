@@ -8,4 +8,4 @@ def public_number(round_num, rounds_won):
 
 
 def real_number(round_num, rounds_won, others_tickets, distribute):
-    return distribute
+    return (distribute + 5) % 21
