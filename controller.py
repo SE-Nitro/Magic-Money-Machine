@@ -1,50 +1,41 @@
-import random
+from colorama import Fore
 
-modules = ["mrtruthyrandom", "mrlierrandom"]
-rounds_won = []
-total_tickets = []
+modules = ["beepboopy_random", "random_copycat"]
+others_money = []  # The `money_insert` var of the other bots, list of tuples
+money = [0] * len(modules)  # Each players own money
 
 
-for _round in range(1, 4):
-    shared_tickets = []
-    tickets = []
-    shared_values = []
-
-    for index, module_name in enumerate(modules):
-        module = __import__(module_name)
-        public_val, shared = module.public_number(
-            _round, [1 if round == index else 0 for _round in rounds_won]
-        )
-        shared_values.append(shared)
-        shared_tickets.append(public_val)
+for stage in range(1, 4):
+    mmm = []  # Money put into the Money Making Machine
+    rounds_money = []  # Current rounds `money_insert` var`
 
     for index, module_name in enumerate(modules):
         module = __import__(module_name)
-        ticket = module.real_number(
-            _round,
-            [1 if _round == index else 0 for _round in rounds_won],
-            shared_tickets,
-            shared_values[index],
-        )
-        tickets.append(ticket)
+        money_insert = module.main(stage, others_money)
+        mmm.append(money_insert)
+        rounds_money.append(money_insert)
+        money[index] += 100 - money_insert
 
-    draw_list = []
-    for index, ticket in enumerate(tickets):
-        draw_list += [index] * ticket
+    others_money.append(tuple(rounds_money))
 
-    rounds_won.append(random.choice(draw_list))
-    total_tickets.append(len(draw_list))
+    for index in range(len(modules)):
+        if stage == 1:
+            boost = 1.2
+        if stage == 2:
+            boost = 1.5
+        else:
+            boost = 2
 
+        money[index] += round((sum(mmm) / len(modules)) * boost)
 
-print("Results:")
-points_list = [0] * len(modules)
-for index, _round in enumerate(rounds_won):
-    if index == 0:
-        points_list[_round] = 100 / total_tickets[index]
-    elif index == 1:
-        points_list[_round] = 300 / total_tickets[index]
-    else:
-        points_list[_round] = 500 / total_tickets[index]
+results = []
 
 for index, module in enumerate(modules):
-    print(f"{module}, {str(round(points_list[index]))} points")
+    results.append((money[index], module))
+
+results.sort(reverse=True)
+
+print(f"{Fore.RED}\033[1mResults:\033[0m{Fore.WHITE}")
+
+for points, module in results:
+    print(f"{Fore.GREEN}{module}{Fore.WHITE}, {Fore.CYAN}{points}{Fore.WHITE} points")
