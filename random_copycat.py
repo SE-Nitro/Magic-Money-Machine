@@ -1,7 +1,11 @@
 import random
 
 
-def main(round_num, others_money):
+def plan(round_num, others_money):
+    return 100
+
+
+def main(round_num, others_money, others_plan):
     if round_num == 1:
         money_insert = random.randint(0, 100)
     else:

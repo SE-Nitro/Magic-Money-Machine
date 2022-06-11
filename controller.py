@@ -8,10 +8,16 @@ money = [0] * len(modules)  # Each players own money
 for stage in range(1, 4):
     mmm = []  # Money put into the Money Making Machine
     rounds_money = []  # Current rounds `money_insert` var`
+    money_pub = []
 
     for index, module_name in enumerate(modules):
         module = __import__(module_name)
-        money_insert = module.main(stage, others_money)
+        money_insert_pub = module.plan(stage, others_money)
+        money_pub.append(money_insert_pub)
+
+    for index, module_name in enumerate(modules):
+        module = __import__(module_name)
+        money_insert = module.main(stage, others_money, money_pub)
         mmm.append(money_insert)
         rounds_money.append(money_insert)
         money[index] += 100 - money_insert
